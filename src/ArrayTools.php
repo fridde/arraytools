@@ -1,21 +1,21 @@
-<?php 
-	
+<?php
+
 	namespace Fridde;
-	
+
 	class ArrayTools
 	{
-		
+		// probably soon deprecated or something
 		public $Array;
-		
+
 		public function __construct ($array = []){
 			$this->Array = $array;
 		}
-		
+
 		public function __invoke()
 		{
 			return $this->Array;
 		}
-		
+
 		function add_header($array, $header)
 		{
 			$header = explode(",", $header);
@@ -33,7 +33,7 @@
 		*/
 		function remove_duplicates($array)
 		{
-			
+
 			return array_unique($array, SORT_REGULAR);
 		}
 		/**
@@ -47,11 +47,11 @@
 		*/
 		function draw_left($array, $targetCol)
 		{
-			
+
 			if ($targetCol == "") {
 				$targetCol = 0;
 			}
-			
+
 			foreach ($array as $rowKey => $row) {
 				foreach ($row as $colKey => $cell) {
 					if ($cell != "" && $targetCol <= $colKey) {
@@ -76,7 +76,7 @@
 			if ($col == "") {
 				$col = 0;
 			}
-			
+
 			$returnArray = array();
 			foreach ($array as $rowKey => $row) {
 				if ($row[$col] == "" && $regex == "") {
@@ -110,7 +110,7 @@
 				$rowRegex = "%\w+%";
 				//means "at least something"
 			}
-			
+
 			$returnArray = array();
 			$rows = Helper::find_rows($array, $rowRegex, $col);
 			foreach ($array as $rowKey => $row) {
@@ -138,9 +138,9 @@
 		*/
 		function remove_lines_where($array, $regex, $col)
 		{
-			
+
 			$linesToRemove = Helper::find_rows($array, $regex, $col);
-			
+
 			$array = Helper::remove_lines($array, $linesToRemove);
 			return $array;
 		}
@@ -176,13 +176,13 @@
 			if (count($checkCol) > 1) {
 				$regex = $checkCol[1];
 			}
-			
+
 			foreach ($array as $rowKey => $row) {
 				if (preg_match($regex, $row[$checkCol]) == 1) {
 					$array[$rowKey][$removeCol] = "";
 				}
 			}
-			
+
 			return $array;
 		}
 		/**
@@ -197,16 +197,16 @@
 		function melt($array, $colsToSplit, $header)
 		{
 			/* will "melt" an array according to Hadley Wickham's paper http://www.jstatsoft.org/v21/i12/paper */
-			
+
 			// header contains only the words used for the value and the word of differentiation, for example "Value" and "Product"
 			$colsToSplit = explode(",", $colsToSplit);
 			$header = explode(",", $header);
-			
+
 			$newHeader = array_diff_key($array[0], array_flip($colsToSplit));
 			$newHeader = array_merge(array_values($newHeader), $header);
-			
+
 			$newArray = array($newHeader);
-			
+
 			foreach ($colsToSplit as $splitCol) {
 				$property = $array[0][$splitCol];
 				foreach ($array as $rowKey => $row) {
@@ -240,9 +240,9 @@
 		*/
 		function get_array_column($array, $col, $hasHeader)
 		{
-			
+
 			$newArray = array();
-			
+
 			if (gettype($hasHeader) == "boolean" && $hasHeader == TRUE) {
 				$newHeader = $array[0][$col];
 				$array = array_slice($array, 1);
@@ -251,7 +251,7 @@
 				$newHeader = $hasHeader;
 				$array = array_slice($array, 1);
 			}
-			
+
 			foreach ($array as $rowKey => $row) {
 				$newArray[] = $row[$col];
 			}
@@ -259,7 +259,7 @@
 			"header" => $newHeader,
 			"values" => $newArray
 			);
-			
+
 			return $returnArray;
 		}
 		/**
@@ -274,16 +274,16 @@
 		function filter_for_value($array, $key, $values)
 		{
 			// goes through each element of an 2d-array and returns only those rows where the element $key is $value
-			
+
 			if (gettype($values) != "array") {
 				$values = array($values);
 			}
-			
+
 			$newArray = array_filter($array, function($arrayRow) use ($key, $values)
 			{
 				return (is_array($arrayRow) && in_array($arrayRow[$key], $values));
 			});
-			
+
 			return $newArray;
 		}
 		/**
@@ -301,7 +301,7 @@
 				usage: $array = array([0]=>array("Fruit"=>"Banana", "Taste"=>"good"),
 				[1]=>array("Fruit"=>"Apple", "Taste"=>"boring"));
 			$newArray = rebuild_keys($array, "Fruit"); */
-			
+
 			$newArray = array();
 			foreach ($array as $rowKey => $arrayRow) {
 				if (isset($newArray[$arrayRow[$key]])) {
@@ -329,7 +329,7 @@
 		*/
 		function array_to_csv_download($array, $filename = "export.csv", $delimiter = ";")
 		{
-			
+
 			// open raw memory as file so no temp files needed, you might run out of memory though
 			$f = fopen('php://memory', 'w');
 			// loop over the input array
@@ -351,7 +351,7 @@
 			*
 			* DESCRIPTION
 			*
-			* @param array $criteria ["column", "value"] or ["column", "=", "value"] 
+			* @param array $criteria ["column", "value"] or ["column", "=", "value"]
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
@@ -369,9 +369,9 @@
 					case "in":
 					return in_array($v[$c[0]], $c[2]);
 					break;
-					
+
 					default:
-					return eval('return("' . $v[$c[0]] . '" ' . $c[1] . ' "' . $c[2] . '");');					
+					return eval('return("' . $v[$c[0]] . '" ' . $c[1] . ' "' . $c[2] . '");');
 				}
 			};
 			$this->Array = array_filter($this->Array, $compare);
@@ -401,11 +401,11 @@
 					if(($inArray && !$remove) || (!$inArray && $remove)){
 						$rowToAdd[$key] = $value;
 					}
-					
+
 				}
 				$resultArray[] = $rowToAdd;
 			}
-			
+
 			return $resultArray;
 		}
 		/**
@@ -423,7 +423,7 @@
 				Pass the array, followed by the column names and sort flags
 				$sorted = array_orderby($data, 'volume', SORT_DESC, 'edition', SORT_ASC);
 			*/
-			
+
 			$args = func_get_args();
 			$data = array_shift($args);
 			foreach ($args as $n => $field) {
@@ -451,7 +451,7 @@
 		{
 			/* will return an element of an array adressed by number instead of key*/
 			$returnObject = "";
-			
+
 			if($type == "index"){
 				$array_keys = array_keys($array);
 				$returnObject = $array_keys[$number];
@@ -460,7 +460,7 @@
 				$array_values = array_values($array);
 				$returnObject = $array_values[$number];
 			}
-			
+
 			return $returnObject;
 		}
 		/**
@@ -497,7 +497,7 @@
 				}
 				$newArray[$rowIndex] = $newRow;
 			}
-			
+
 			return $newArray;
 		}
 		/**
@@ -531,14 +531,14 @@
 		*/
 		function sort_according_to($wordArray, $name)
 		{
-			
+
 			$normArray = array($name => $wordArray[$name]);
 			$otherArrays = array_diff_key($wordArray, $normArray);
-			
+
 			foreach ($otherArrays as $file => $frequencies) {
 				$frequencies = $frequencies["frequencies"];
 				$newArray = array();
-				
+
 				foreach ($normArray[$name]["frequencies"] as $word => $frequency) {
 					if (isset($frequencies[$word])) {
 						$newArray[$word] = $frequencies[$word];
@@ -548,7 +548,7 @@
 					}
 				}
 				$otherArrays[$file]["frequencies"] = $newArray;
-				
+
 			}
 			$returnArray = array_merge($normArray, $otherArrays);
 			return $returnArray;
@@ -564,13 +564,13 @@
 		*/
 		function array_delete_by_key(&$array, $delete_key, $use_old_keys = FALSE)
 		{
-			
+
 			unset($array[$delete_key]);
-			
+
 			if (!$use_old_keys) {
 				$array = array_values($array);
 			}
-			
+
 			return TRUE;
 		}
 		/**
@@ -598,7 +598,7 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function fill_array($array, $cols = NULL)
 		{
 			/* for a given $array of arrays, each array is padded with NULL-values
@@ -611,11 +611,11 @@
 			else {
 				$cols = $col_row["col"] + intval($cols);
 			}
-			
+
 			foreach ($array as $key => $row) {
 				$array[$key] = array_pad($row, $cols, NULL);
 			}
-			
+
 			return $array;
 		}
 		/**
@@ -627,17 +627,17 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function array_to_csv($dataArray, $filePointer = NULL, $delimiter = ',', $enclosure = '"', $encloseAll = TRUE, $nullToMysqlNull = false)
 		{
 			$csvstring = "";
 			if (isset($filePointer)) {
 				$filePointer = fopen($filePointer, "w+");
 			}
-			
+
 			$delimiter_esc = preg_quote($delimiter, '/');
 			$enclosure_esc = preg_quote($enclosure, '/');
-			
+
 			foreach ($dataArray as $row) {
 				if (empty($row)) {
 					continue;
@@ -649,7 +649,7 @@
 						continue;
 					}
 					$field = trim($field);
-					
+
 					// Enclose fields containing $delimiter, $enclosure or whitespace
 					if ($encloseAll || preg_match("/(?:${delimiter_esc}|${enclosure_esc}|[[:blank:]])/", $field)) {
 						$output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
@@ -658,14 +658,14 @@
 						$output[] = $field;
 					}
 				}
-				
+
 				$csvstring .= implode($delimiter, $output) . PHP_EOL;
 			}
 			if (isset($filePointer)) {
 				fwrite($filePointer, $csvstring);
 				fclose($filePointer);
 			}
-			
+
 			return $csvstring;
 		}
 		/**
@@ -690,15 +690,15 @@
 			}
 			$cols_rows = Helper::count_col_row($array);
 			$cols = $cols_rows["col"];
-			
+
 			foreach ($array as $key => $row) {
-				
+
 				if ($copy == "TRUE" || empty($row[$pivotColumn + 1])) {
 					$row[$cols - 1] = $row[$pivotColumn];
 					$array[$key] = $row;
 				}
 			}
-			
+
 			return $array;
 		}
 		/**
@@ -710,7 +710,7 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function copy_column($array, $column)
 		{
 			/* will copy the content of a column to the last column */
@@ -737,7 +737,7 @@
 			else {
 				$pivotCols = explode(",", $pivotCols);
 			}
-			
+
 			if (gettype($pivotRows) == "string" && $pivotRows != "") {
 				$pivotRows = explode(",", $pivotRows);
 			}
@@ -748,7 +748,7 @@
 						if (trim($row[$col]) != "") {
 							$pivotRows[] = $rowKey;
 						}
-						
+
 					}
 				}
 			}
@@ -774,14 +774,14 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function remove_lines($array, $lines)
 		{
 			if (gettype($lines) == "string") {
 				$lines = explode(",", $lines);
 			}
 			$newArray = array();
-			
+
 			foreach ($array as $key => $row) {
 				if (!(in_array($key, $lines)))
 				$newArray[] = $row;
@@ -805,7 +805,7 @@
 			else {
 				$columns = explode(",", $columns);
 			}
-			
+
 			$newArray = array();
 			foreach ($array as $rowKey => $row) {
 				foreach ($row as $colKey => $cell) {
@@ -819,7 +819,7 @@
 					}
 				}
 			}
-			
+
 			return $newArray;
 		}
 		/**
@@ -831,12 +831,12 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function empty_columns($array)
 		{
 			$columns = $array[0];
 			$resColumns = array();
-			
+
 			foreach ($columns as $colKey => $col) {
 				$colArray = array();
 				foreach ($array as $rowKey => $row) {
@@ -859,7 +859,7 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function interject_rows($array, $number, $copy)
 		{
 			if ($number == "") {
@@ -869,12 +869,12 @@
 				$copy = FALSE;
 			}
 			$emptyRow = array_fill(0, count($array[0]), NULL);
-			
+
 			$newArray = array();
-			
+
 			foreach ($array as $rowKey => $row) {
 				$newArray[] = $row;
-				
+
 				for ($i = 0; $i < $number; $i++) {
 					if ($copy == "TRUE") {
 						$newArray[] = $newArray[$rowKey];
@@ -884,7 +884,7 @@
 					}
 				}
 			}
-			
+
 			return $newArray;
 		}
 		/**
@@ -896,7 +896,7 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function add_column($csv, $cols)
 		{
 			if ($cols == "") {
@@ -913,7 +913,7 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function copy_where($array, $col, $regex)
 		{
 			if ($col == "") {
@@ -922,14 +922,14 @@
 			if ($regex == "") {
 				$regex = "%\w+%";
 			}
-			
+
 			$endCol = count($array[0]) - 1;
 			foreach ($array as $rowKey => $row) {
 				if (preg_match($regex, $row[$col]) == 1) {
 					$array[$rowKey][$endCol] = $array[$rowKey][$col];
 				}
 			}
-			
+
 			return $array;
 		}
 		/**
@@ -941,19 +941,19 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function remove_from($array, $col, $regex)
 		{
-			
+
 			$col = explode(",", $col);
 			$regex = explode(",", $regex);
 			foreach ($col as $colKey => $colValue) {
 				foreach ($array as $rowKey => $row) {
-					
+
 					$array[$rowKey][$colValue] = preg_replace($regex[$colKey], "", $row[$colValue]);
 				}
 			}
-			
+
 			return $array;
 		}
 		/**
@@ -965,7 +965,7 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function nonempty_keys($array, $col = 0)
 		{
 			$nonEmpty = array();
@@ -985,7 +985,7 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function nonempty_columns($array)
 		{
 			$returnArray = array();
@@ -1007,12 +1007,12 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		
+
 		function slice_at($array, $startpoints)
 		{
 			$diffpoints = array();
 			$startpoints = array_unique($startpoints);
-			
+
 			foreach ($startpoints as $key => $value) {
 				if ($key != count($startpoints) - 1) {
 					$diffpoints[] = $startpoints[$key + 1] - $value;
@@ -1042,9 +1042,9 @@
 			}
 			return $array;
 		}
-		
+
 		/*
-			
+
 		*/
 		/**
 			* SUMMARY OF multiple_search
@@ -1061,7 +1061,7 @@
 			if (gettype($needle_array) != "array") {
 				$needle_array = array($needle_array);
 			}
-			
+
 			foreach ($needle_array as $needleKey => $needleValue) {
 				foreach ($haystack_array as $haystackKey => $haystackValue) {
 					$is_found = gettype(stripos($haystackValue, $needleValue)) == "integer";
@@ -1073,12 +1073,12 @@
 			}
 			$returnArray = array_unique(array_values($returnArray));
 			sort($returnArray);
-			
+
 			return $returnArray;
 		}
-		
+
 		/*
-			
+
 		*/
 		/**
 			* SUMMARY OF merge_columns
@@ -1091,18 +1091,18 @@
 		*/
 		function merge_columns($array, $col1, $col2)
 		{
-			
+
 			foreach ($array as $rowKey => $row) {
-				
+
 				$array[$rowKey][$col1] = $array[$rowKey][$col1] . $array[$rowKey][$col2];
 			}
 			$array = Helper::remove_columns($array, $columns = $col2);
-			
+
 			return $array;
 		}
-		
+
 		/*
-			
+
 		*/
 		/**
 			* SUMMARY OF split_at
@@ -1122,18 +1122,18 @@
 			else {
 				$char = "%" . $char . "%";
 			}
-			
+
 			foreach ($array as $rowKey => $row) {
-				
+
 				$cell = $row[$col];
-				
+
 				$splitArray = preg_split($char, $cell);
 				$leftCell = array($splitArray[0]);
 				$rightCell = array($splitArray[1]);
-				
+
 				if ($col == 0) {
 					$array[$rowKey] = array_merge($leftCell, $rightCell, array_slice($row, 2));
-					
+
 				}
 				else {
 					$leftPart = array_slice($row, 0, $col - 1);
@@ -1141,7 +1141,7 @@
 					$array[$rowKey] = array_merge($leftPart, $leftCell, $rightCell, $rightPart);
 				}
 			}
-			
+
 			return $array;
 		}
-	}								
+	}
