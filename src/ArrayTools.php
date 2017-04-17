@@ -355,9 +355,8 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		public function where()
+		public function where(...$c)
 		{
-			$c = func_get_args();
 			if(count($c) == 2){
 				$c = [$c[0], "=", $c[1]];
 			}
@@ -417,14 +416,13 @@
 			*
 			* @return TYPE NAME DESCRIPTION
 		*/
-		function array_orderby()
+		function array_orderby(...$args)
 		{
 			/* Will sort a 2d-array according to own rules
 				Pass the array, followed by the column names and sort flags
 				$sorted = array_orderby($data, 'volume', SORT_DESC, 'edition', SORT_ASC);
 			*/
 
-			$args = func_get_args();
 			$data = array_shift($args);
 			foreach ($args as $n => $field) {
 				if (is_string($field)) {
