@@ -447,7 +447,7 @@
 		*/
 		function get_element($array, $type = "index", $number = 0)
 		{
-			/* will return an element of an array adressed by number instead of key*/
+			/* will return an element of an array addressed by number instead of key*/
 			$returnObject = "";
 
 			if($type == "index"){
